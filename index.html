@@ -80,9 +80,16 @@
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .logo:hover {
+            opacity: 0.85;
         }
         
         .nav-links {
@@ -324,7 +331,7 @@
     <div class="bg-animation"></div>
     
     <nav>
-        <div class="logo">🦊 Open Fred</div>
+        <a href="index.html" class="logo" style="text-decoration: none;">🦊 Open Fred</a>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
             <li><a href="#about">Sobre</a></li>
