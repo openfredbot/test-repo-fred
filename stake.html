@@ -682,9 +682,20 @@
         }
         
         .hidden { display: none !important; }
+        
+        /* Nav wallet area - contains connect button or wallet menu */
+        .nav-wallet-area { display: contents; }
+        
+        /* Initial loading state - hide content until we know connection status */
+        .app-loading .main-content,
+        .app-loading #connectBtn,
+        .app-loading #walletMenuContainer { opacity: 0; }
+        .main-content,
+        #connectBtn,
+        #walletMenuContainer { transition: opacity 0.2s ease; }
     </style>
 </head>
-<body>
+<body class="app-loading">
     <div class="bg-animation"></div>
     
     <nav>
@@ -695,11 +706,12 @@
                 <span>Base</span>
             </div>
             
-            <button class="connect-btn" id="connectBtn" onclick="openConnectModal()">
-                🔗 Conectar Wallet
-            </button>
-            
-            <div class="wallet-menu-container hidden" id="walletMenuContainer">
+            <div class="nav-wallet-area">
+                <button class="connect-btn" id="connectBtn" onclick="openConnectModal()">
+                    🔗 Conectar Wallet
+                </button>
+                
+                <div class="wallet-menu-container hidden" id="walletMenuContainer">
                 <button class="wallet-btn" id="walletBtn" onclick="toggleWalletMenu()">
                     <div class="wallet-avatar">🦊</div>
                     <div class="wallet-info">
@@ -724,10 +736,11 @@
                     </button>
                 </div>
             </div>
+            </div>
         </div>
     </nav>
     
-    <div class="container">
+    <div class="container main-content">
         <div class="header">
             <h1>Stake $FRED</h1>
             <p style="color: var(--text-muted);">Ganhe recompensas passivas com seu $FRED</p>
@@ -1485,8 +1498,14 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
         });
         
         // Initialize: load stats and try auto-connect
-        loadPublicStats();
-        tryAutoConnect();
+        async function init() {
+            loadPublicStats();
+            await tryAutoConnect();
+            // Remove loading state - show the appropriate UI
+            document.body.classList.remove('app-loading');
+        }
+        
+        init();
     </script>
 </body>
 </html>
