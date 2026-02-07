@@ -998,11 +998,15 @@
             }
             
             try {
+                // Limpar qualquer sessão anterior
+                localStorage.removeItem('fred_connected_address');
+                userAddress = null;
+                
                 showToast('Conectando...', 'success');
                 
                 provider = new ethers.BrowserProvider(window.ethereum);
                 const accounts = await provider.send("eth_requestAccounts", []);
-                userAddress = accounts[0];
+                userAddress = accounts[0].toLowerCase();
                 
                 const network = await provider.getNetwork();
                 if (Number(network.chainId) !== BASE_CHAIN_ID) {
@@ -1113,8 +1117,8 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 document.getElementById('notConnectedCard').classList.add('hidden');
                 document.getElementById('stakingPanel').classList.remove('hidden');
                 
-                // Save session to localStorage
-                localStorage.setItem('fred_connected_address', userAddress);
+                // Save session to localStorage (always lowercase for consistency)
+                localStorage.setItem('fred_connected_address', userAddress.toLowerCase());
                 
                 await updateAllData();
                 
@@ -1145,6 +1149,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 
                 const currentAddress = accounts[0].toLowerCase();
                 if (currentAddress !== savedAddress.toLowerCase()) {
+                    // Wallet mudou! Limpar sessão e NÃO auto-conectar
                     localStorage.removeItem('fred_connected_address');
                     return;
                 }
@@ -1160,7 +1165,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 }
                 
                 signer = await provider.getSigner();
-                userAddress = savedAddress;
+                userAddress = currentAddress; // Usar o endereço atual, não o salvo
                 
                 await completeConnection(true); // Skip toast on auto-connect
                 
@@ -1482,19 +1487,22 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
         
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (accounts) => {
+                // Sempre limpar sessão salva quando conta muda
+                localStorage.removeItem('fred_connected_address');
+                
                 if (accounts.length === 0) {
-                    localStorage.removeItem('fred_connected_address');
                     disconnectWallet();
                 } else {
-                    // If user switched to a different account, clear saved session and reload
-                    const savedAddress = localStorage.getItem('fred_connected_address');
-                    if (savedAddress && accounts[0].toLowerCase() !== savedAddress.toLowerCase()) {
-                        localStorage.removeItem('fred_connected_address');
-                    }
-                    location.reload();
+                    // Conta mudou - desconectar e mostrar tela de conexão
+                    // Usuário precisa reconectar com a nova wallet
+                    disconnectWallet();
+                    showToast('Wallet mudou - reconecte para continuar', 'success');
                 }
             });
-            window.ethereum.on('chainChanged', () => location.reload());
+            window.ethereum.on('chainChanged', () => {
+                localStorage.removeItem('fred_connected_address');
+                location.reload();
+            });
         }
         
         document.querySelectorAll('.modal-overlay').forEach(modal => {
