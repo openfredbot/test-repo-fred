@@ -1312,6 +1312,8 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 
                 showToast('✓ Stake realizado!', 'success');
                 document.getElementById('stakeAmount').value = '';
+                // Small delay to let RPC sync, then refresh data
+                await new Promise(r => setTimeout(r, 1000));
                 await updateAllData();
                 
             } catch (error) {
@@ -1343,6 +1345,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 
                 showToast('✓ Unstake realizado!', 'success');
                 document.getElementById('unstakeAmount').value = '';
+                await new Promise(r => setTimeout(r, 1000));
                 await updateAllData();
                 
             } catch (error) {
@@ -1365,6 +1368,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 await tx.wait();
                 
                 showToast('✓ Recompensas coletadas!', 'success');
+                await new Promise(r => setTimeout(r, 1000));
                 await updateAllData();
                 
             } catch (error) {
@@ -1403,6 +1407,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 
                 showToast('✓ Recompensas depositadas!', 'success');
                 document.getElementById('depositAmount').value = '';
+                await new Promise(r => setTimeout(r, 1000));
                 await updateAllData();
                 
             } catch (error) {
@@ -1434,6 +1439,7 @@ Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
                 
                 showToast('✓ Recompensas retiradas!', 'success');
                 document.getElementById('withdrawAmount').value = '';
+                await new Promise(r => setTimeout(r, 1000));
                 await updateAllData();
                 
             } catch (error) {
