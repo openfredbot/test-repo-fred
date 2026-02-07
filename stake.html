@@ -54,17 +54,61 @@
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .network-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+        
+        .network-badge.wrong {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        .network-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .network-badge.wrong .network-dot {
+            background: #ef4444;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .connect-btn {
             padding: 0.75rem 1.5rem;
             background: var(--gradient);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .connect-btn:hover {
@@ -73,9 +117,15 @@
         }
         
         .connect-btn.connected {
-            background: rgba(100, 255, 218, 0.1);
-            border: 1px solid var(--accent);
-            color: var(--accent);
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .wallet-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient);
         }
         
         .container {
@@ -107,6 +157,19 @@
             margin-top: 1rem;
         }
         
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 50px;
+            color: var(--success);
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -120,6 +183,12 @@
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.05);
             text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: rgba(255, 107, 53, 0.3);
+            transform: translateY(-2px);
         }
         
         .stat-card .label {
@@ -174,6 +243,11 @@
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
         }
         
         .input-wrapper input {
@@ -193,6 +267,11 @@
             color: var(--primary);
             font-weight: 600;
             cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .input-wrapper .max-btn:hover {
+            opacity: 0.8;
         }
         
         .balance-row {
@@ -215,6 +294,10 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         
         .action-btn:hover:not(:disabled) {
@@ -233,6 +316,23 @@
             color: var(--primary);
         }
         
+        .action-btn.loading {
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .rewards-card {
             background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
             border: 1px solid rgba(100, 255, 218, 0.3);
@@ -244,6 +344,7 @@
             color: var(--accent);
             text-align: center;
             margin: 1.5rem 0;
+            font-family: monospace;
         }
         
         .rewards-usd {
@@ -260,8 +361,116 @@
         }
         
         .info-row:last-child { border: none; }
-        
         .info-row .label { color: var(--text-muted); }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .modal h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.75rem;
+            border: 1px solid transparent;
+        }
+        
+        .wallet-option:hover {
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .wallet-option img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .wallet-option .wallet-name {
+            font-weight: 600;
+        }
+        
+        .wallet-option .wallet-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .modal-close {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            border-color: var(--text-muted);
+        }
+        
+        /* Not Connected State */
+        .not-connected {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .not-connected .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .not-connected h2 {
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .not-connected p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
         
         .toast {
             position: fixed;
@@ -273,34 +482,16 @@
             border: 1px solid rgba(255,255,255,0.1);
             display: none;
             z-index: 1000;
+            max-width: 350px;
         }
         
         .toast.success { border-color: var(--success); }
         .toast.error { border-color: #ef4444; }
-        .toast.show { display: block; animation: slideIn 0.3s ease; }
+        .toast.show { display: flex; align-items: center; gap: 0.75rem; animation: slideIn 0.3s ease; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .network-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 107, 53, 0.1);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            margin-left: 1rem;
-        }
-        
-        .network-badge::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
         }
         
         footer {
@@ -315,20 +506,27 @@
         @media (max-width: 768px) {
             .header h1 { font-size: 2rem; }
             .main-grid { grid-template-columns: 1fr; }
+            .nav-right { gap: 0.5rem; }
+            .network-badge span:last-child { display: none; }
         }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
     
     <nav>
-        <div style="display: flex; align-items: center;">
-            <span class="logo">🦊 Fred Staking</span>
-            <span class="network-badge">Base</span>
+        <a href="index.html" class="logo">🦊 Fred Staking</a>
+        <div class="nav-right">
+            <div class="network-badge" id="networkBadge">
+                <div class="network-dot"></div>
+                <span>Base</span>
+            </div>
+            <button class="connect-btn" id="connectBtn" onclick="openConnectModal()">
+                🔗 Conectar
+            </button>
         </div>
-        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
-            Connect Wallet
-        </button>
     </nav>
     
     <div class="container">
@@ -339,6 +537,7 @@
                 <span>🔥</span>
                 <span>30% APY</span>
             </div>
+            <span class="verified-badge">✓ Verificado</span>
         </div>
         
         <div class="stats-grid">
@@ -360,7 +559,18 @@
             </div>
         </div>
         
-        <div class="main-grid">
+        <!-- Not Connected State -->
+        <div class="card not-connected" id="notConnectedCard">
+            <div class="icon">🦊</div>
+            <h2>Conecte sua Wallet</h2>
+            <p>Conecte sua wallet para fazer stake de $FRED e ganhar recompensas</p>
+            <button class="action-btn" onclick="openConnectModal()" style="max-width: 300px; margin: 0 auto;">
+                🔗 Conectar Wallet
+            </button>
+        </div>
+        
+        <!-- Connected State -->
+        <div class="main-grid hidden" id="stakingPanel">
             <div class="card">
                 <h2>📥 Stake</h2>
                 <div class="input-group">
@@ -372,9 +582,9 @@
                 </div>
                 <div class="balance-row">
                     <span>Balance:</span>
-                    <span id="walletBalance">-</span>
+                    <span id="walletBalance">0 FRED</span>
                 </div>
-                <button class="action-btn" id="stakeBtn" onclick="stakeTokens()" disabled>
+                <button class="action-btn" id="stakeBtn" onclick="stakeTokens()">
                     Stake $FRED
                 </button>
             </div>
@@ -390,18 +600,18 @@
                 </div>
                 <div class="balance-row">
                     <span>Staked:</span>
-                    <span id="stakedBalance">-</span>
+                    <span id="stakedBalance">0 FRED</span>
                 </div>
-                <button class="action-btn secondary" id="unstakeBtn" onclick="unstakeTokens()" disabled>
+                <button class="action-btn secondary" id="unstakeBtn" onclick="unstakeTokens()">
                     Unstake $FRED
                 </button>
             </div>
             
             <div class="card rewards-card">
                 <h2>🎁 Rewards</h2>
-                <div class="rewards-amount" id="pendingRewards">0.00</div>
+                <div class="rewards-amount" id="pendingRewards">0.0000</div>
                 <div class="rewards-usd">$FRED acumulado</div>
-                <button class="action-btn" id="claimBtn" onclick="claimRewards()" disabled>
+                <button class="action-btn" id="claimBtn" onclick="claimRewards()">
                     Claim Rewards
                 </button>
                 
@@ -424,51 +634,97 @@
         <p style="margin-top: 0.5rem;">Powered by <a href="index.html">Open Fred</a> 🦊</p>
     </footer>
     
+    <!-- Connect Modal -->
+    <div class="modal-overlay" id="connectModal">
+        <div class="modal">
+            <h3>Conectar Wallet</h3>
+            
+            <div class="wallet-option" onclick="connectWallet('metamask')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+                <div>
+                    <div class="wallet-name">MetaMask</div>
+                    <div class="wallet-desc">Conectar com MetaMask</div>
+                </div>
+            </div>
+            
+            <div class="wallet-option" onclick="connectWallet('walletconnect')">
+                <img src="https://avatars.githubusercontent.com/u/37784886" alt="WalletConnect" style="background: #3B99FC;">
+                <div>
+                    <div class="wallet-name">WalletConnect</div>
+                    <div class="wallet-desc">Escanear com seu celular</div>
+                </div>
+            </div>
+            
+            <div class="wallet-option" onclick="connectWallet('coinbase')">
+                <img src="https://avatars.githubusercontent.com/u/18060234" alt="Coinbase">
+                <div>
+                    <div class="wallet-name">Coinbase Wallet</div>
+                    <div class="wallet-desc">Conectar com Coinbase</div>
+                </div>
+            </div>
+            
+            <button class="modal-close" onclick="closeConnectModal()">Cancelar</button>
+        </div>
+    </div>
+    
     <div class="toast" id="toast"></div>
 
     <script>
-        // Contract addresses - UPDATE THESE AFTER DEPLOYMENT
-        const STAKING_CONTRACT = '0xA31824476d177205d448908a4ec9f6e2fc9274DB'; // TODO: Update
+        const STAKING_CONTRACT = '0xA31824476d177205d448908a4ec9f6e2fc9274DB';
         const FRED_TOKEN = '0x3f9BEB72028F52111065c9e9F8684B91Ad19dE9d';
         const BASE_CHAIN_ID = 8453;
         
-        // ABIs (simplified)
         const STAKING_ABI = [
             "function stake(uint256 amount) external",
             "function unstake(uint256 amount) external",
             "function claimRewards() external",
             "function pendingRewards(address user) view returns (uint256)",
             "function getStakeInfo(address user) view returns (uint256 stakedAmount, uint256 pending, uint256 lastUpdate)",
-            "function getContractStats() view returns (uint256 totalStaked, uint256 rewardPool, uint256 totalRewardsPaid, uint256 apy)",
-            "function stakes(address) view returns (uint256 amount, uint256 rewardDebt, uint256 lastUpdateTime)"
+            "function getContractStats() view returns (uint256 totalStaked, uint256 rewardPool, uint256 totalRewardsPaid, uint256 apy)"
         ];
         
         const ERC20_ABI = [
             "function balanceOf(address) view returns (uint256)",
             "function approve(address spender, uint256 amount) returns (bool)",
-            "function allowance(address owner, address spender) view returns (uint256)",
-            "function decimals() view returns (uint8)"
+            "function allowance(address owner, address spender) view returns (uint256)"
         ];
         
         let provider, signer, userAddress;
         let stakingContract, tokenContract;
+        let rewardUpdateInterval;
         
-        async function connectWallet() {
+        function openConnectModal() {
+            document.getElementById('connectModal').classList.add('show');
+        }
+        
+        function closeConnectModal() {
+            document.getElementById('connectModal').classList.remove('show');
+        }
+        
+        async function connectWallet(walletType) {
+            closeConnectModal();
+            
+            if (walletType === 'walletconnect' || walletType === 'coinbase') {
+                showToast('Em breve! Use MetaMask por enquanto.', 'error');
+                return;
+            }
+            
             if (!window.ethereum) {
-                showToast('Por favor instale MetaMask!', 'error');
+                showToast('MetaMask não encontrado! Instale em metamask.io', 'error');
                 return;
             }
             
             try {
-                provider = new ethers.BrowserProvider(window.ethereum);
+                showToast('Conectando...', 'success');
                 
-                // Request accounts
+                provider = new ethers.BrowserProvider(window.ethereum);
                 const accounts = await provider.send("eth_requestAccounts", []);
                 userAddress = accounts[0];
                 
-                // Check network
+                // Check and switch network
                 const network = await provider.getNetwork();
                 if (Number(network.chainId) !== BASE_CHAIN_ID) {
+                    showToast('Mudando para Base...', 'success');
                     try {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
@@ -486,6 +742,8 @@
                                     blockExplorerUrls: ['https://basescan.org']
                                 }]
                             });
+                        } else {
+                            throw switchError;
                         }
                     }
                     provider = new ethers.BrowserProvider(window.ethereum);
@@ -499,44 +757,66 @@
                 
                 // Update UI
                 const shortAddr = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
-                document.getElementById('connectBtn').textContent = shortAddr;
+                document.getElementById('connectBtn').innerHTML = `
+                    <div class="wallet-avatar"></div>
+                    ${shortAddr}
+                `;
                 document.getElementById('connectBtn').classList.add('connected');
+                document.getElementById('connectBtn').onclick = disconnectWallet;
                 
-                // Enable buttons
-                document.getElementById('stakeBtn').disabled = false;
-                document.getElementById('unstakeBtn').disabled = false;
-                document.getElementById('claimBtn').disabled = false;
+                document.getElementById('notConnectedCard').classList.add('hidden');
+                document.getElementById('stakingPanel').classList.remove('hidden');
                 
-                // Load data
                 await updateAllData();
                 
                 // Start reward updater
-                setInterval(updatePendingRewards, 5000);
+                rewardUpdateInterval = setInterval(updatePendingRewards, 3000);
                 
-                showToast('Wallet conectada!', 'success');
+                showToast('✓ Wallet conectada com sucesso!', 'success');
                 
             } catch (error) {
                 console.error(error);
-                showToast('Erro ao conectar: ' + error.message, 'error');
+                if (error.code === 4001) {
+                    showToast('Conexão cancelada pelo usuário', 'error');
+                } else {
+                    showToast('Erro: ' + (error.message || 'Falha na conexão'), 'error');
+                }
             }
+        }
+        
+        function disconnectWallet() {
+            userAddress = null;
+            provider = null;
+            signer = null;
+            stakingContract = null;
+            tokenContract = null;
+            
+            if (rewardUpdateInterval) clearInterval(rewardUpdateInterval);
+            
+            document.getElementById('connectBtn').innerHTML = '🔗 Conectar';
+            document.getElementById('connectBtn').classList.remove('connected');
+            document.getElementById('connectBtn').onclick = openConnectModal;
+            
+            document.getElementById('notConnectedCard').classList.remove('hidden');
+            document.getElementById('stakingPanel').classList.add('hidden');
+            
+            showToast('Wallet desconectada', 'success');
         }
         
         async function updateAllData() {
             if (!userAddress) return;
             
             try {
-                // Get token balance
-                const balance = await tokenContract.balanceOf(userAddress);
-                document.getElementById('walletBalance').textContent = formatAmount(balance) + ' FRED';
+                const [balance, stakeInfo, stats] = await Promise.all([
+                    tokenContract.balanceOf(userAddress),
+                    stakingContract.getStakeInfo(userAddress),
+                    stakingContract.getContractStats()
+                ]);
                 
-                // Get stake info
-                const stakeInfo = await stakingContract.getStakeInfo(userAddress);
+                document.getElementById('walletBalance').textContent = formatAmount(balance) + ' FRED';
                 document.getElementById('yourStake').textContent = formatAmount(stakeInfo[0]) + ' FRED';
                 document.getElementById('stakedBalance').textContent = formatAmount(stakeInfo[0]) + ' FRED';
                 document.getElementById('pendingRewards').textContent = formatAmount(stakeInfo[1]);
-                
-                // Get contract stats
-                const stats = await stakingContract.getContractStats();
                 document.getElementById('totalStaked').textContent = formatAmount(stats[0]) + ' FRED';
                 document.getElementById('rewardPool').textContent = formatAmount(stats[1]) + ' FRED';
                 
@@ -554,7 +834,10 @@
         }
         
         function formatAmount(wei) {
-            return parseFloat(ethers.formatEther(wei)).toLocaleString('en-US', {
+            const value = parseFloat(ethers.formatEther(wei));
+            if (value === 0) return '0.00';
+            if (value < 0.0001) return value.toExponential(2);
+            return value.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 4
             });
@@ -579,28 +862,38 @@
                 return;
             }
             
+            const btn = document.getElementById('stakeBtn');
+            btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.classList.add('loading');
+            
             try {
                 const amountWei = ethers.parseEther(amount);
                 
-                // Check allowance
                 const allowance = await tokenContract.allowance(userAddress, STAKING_CONTRACT);
                 if (allowance < amountWei) {
-                    showToast('Aprovando tokens...', 'success');
+                    showToast('Aprovando tokens... Confirme na wallet', 'success');
                     const approveTx = await tokenContract.approve(STAKING_CONTRACT, ethers.MaxUint256);
                     await approveTx.wait();
                 }
                 
-                showToast('Fazendo stake...', 'success');
+                showToast('Fazendo stake... Confirme na wallet', 'success');
                 const tx = await stakingContract.stake(amountWei);
                 await tx.wait();
                 
-                showToast('Stake realizado com sucesso!', 'success');
+                showToast('✓ Stake realizado com sucesso!', 'success');
                 document.getElementById('stakeAmount').value = '';
                 await updateAllData();
                 
             } catch (error) {
                 console.error(error);
-                showToast('Erro: ' + (error.reason || error.message), 'error');
+                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                    showToast('Transação cancelada', 'error');
+                } else {
+                    showToast('Erro: ' + (error.reason || error.message), 'error');
+                }
+            } finally {
+                btn.innerHTML = 'Stake $FRED';
+                btn.classList.remove('loading');
             }
         }
         
@@ -611,50 +904,103 @@
                 return;
             }
             
+            const btn = document.getElementById('unstakeBtn');
+            btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.classList.add('loading');
+            
             try {
                 const amountWei = ethers.parseEther(amount);
                 
-                showToast('Fazendo unstake...', 'success');
+                showToast('Fazendo unstake... Confirme na wallet', 'success');
                 const tx = await stakingContract.unstake(amountWei);
                 await tx.wait();
                 
-                showToast('Unstake realizado com sucesso!', 'success');
+                showToast('✓ Unstake realizado com sucesso!', 'success');
                 document.getElementById('unstakeAmount').value = '';
                 await updateAllData();
                 
             } catch (error) {
                 console.error(error);
-                showToast('Erro: ' + (error.reason || error.message), 'error');
+                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                    showToast('Transação cancelada', 'error');
+                } else {
+                    showToast('Erro: ' + (error.reason || error.message), 'error');
+                }
+            } finally {
+                btn.innerHTML = 'Unstake $FRED';
+                btn.classList.remove('loading');
             }
         }
         
         async function claimRewards() {
+            const btn = document.getElementById('claimBtn');
+            btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.classList.add('loading');
+            
             try {
-                showToast('Coletando recompensas...', 'success');
+                showToast('Coletando recompensas... Confirme na wallet', 'success');
                 const tx = await stakingContract.claimRewards();
                 await tx.wait();
                 
-                showToast('Recompensas coletadas!', 'success');
+                showToast('✓ Recompensas coletadas!', 'success');
                 await updateAllData();
                 
             } catch (error) {
                 console.error(error);
-                showToast('Erro: ' + (error.reason || error.message), 'error');
+                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                    showToast('Transação cancelada', 'error');
+                } else {
+                    showToast('Erro: ' + (error.reason || error.message), 'error');
+                }
+            } finally {
+                btn.innerHTML = 'Claim Rewards';
+                btn.classList.remove('loading');
             }
         }
         
         function showToast(message, type) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            const icon = type === 'success' ? '✓' : '✕';
+            toast.innerHTML = `<span style="font-size: 1.2rem;">${icon}</span> ${message}`;
             toast.className = 'toast show ' + type;
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
         
-        // Check if already connected
+        // Load contract stats on page load
+        async function loadPublicStats() {
+            try {
+                const rpcProvider = new ethers.JsonRpcProvider('https://mainnet.base.org');
+                const contract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, rpcProvider);
+                const stats = await contract.getContractStats();
+                
+                document.getElementById('totalStaked').textContent = formatAmount(stats[0]) + ' FRED';
+                document.getElementById('rewardPool').textContent = formatAmount(stats[1]) + ' FRED';
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+        }
+        
+        // Event listeners
         if (window.ethereum) {
-            window.ethereum.on('accountsChanged', () => location.reload());
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    disconnectWallet();
+                } else {
+                    location.reload();
+                }
+            });
             window.ethereum.on('chainChanged', () => location.reload());
         }
+        
+        // Close modal on outside click
+        document.getElementById('connectModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('connectModal')) {
+                closeConnectModal();
+            }
+        });
+        
+        // Load stats on page load
+        loadPublicStats();
     </script>
 </body>
 </html>
