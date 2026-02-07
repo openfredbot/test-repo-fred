@@ -12,7 +12,6 @@
         
         :root {
             --primary: #ff6b35;
-            --primary-dark: #e55a2b;
             --bg-dark: #0a0a0f;
             --bg-card: #12121a;
             --bg-input: #1a1a24;
@@ -21,6 +20,7 @@
             --accent: #64ffda;
             --success: #4ade80;
             --warning: #fbbf24;
+            --danger: #ef4444;
             --gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         }
         
@@ -72,11 +72,6 @@
             border-radius: 50px;
             font-size: 0.85rem;
             color: var(--accent);
-        }
-        
-        .network-badge.wrong {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
         }
         
         .network-dot {
@@ -153,7 +148,7 @@
             font-size: 0.9rem;
         }
         
-        .wallet-balance {
+        .wallet-balance-nav {
             font-size: 0.75rem;
             color: var(--text-muted);
         }
@@ -165,7 +160,7 @@
             background: var(--bg-card);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
-            min-width: 220px;
+            min-width: 240px;
             padding: 0.5rem;
             display: none;
             z-index: 100;
@@ -195,6 +190,7 @@
             background: none;
             width: 100%;
             font-size: 0.9rem;
+            text-align: left;
         }
         
         .wallet-dropdown-item:hover {
@@ -202,7 +198,7 @@
         }
         
         .wallet-dropdown-item.danger {
-            color: #ef4444;
+            color: var(--danger);
         }
         
         .wallet-dropdown-divider {
@@ -219,14 +215,19 @@
         
         .wallet-dropdown-header .address-full {
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             word-break: break-all;
         }
         
-        .verified-icon {
+        .owner-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: rgba(100, 255, 218, 0.2);
             color: var(--accent);
-            font-size: 0.9rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
         }
         
         .container {
@@ -404,12 +405,19 @@
         .action-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
         
         .action-btn.secondary {
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
+        }
+        
+        .action-btn.admin-btn {
+            background: linear-gradient(135deg, #64ffda 0%, #4ade80 100%);
+            color: #0a0a0f;
         }
         
         .spinner {
@@ -454,6 +462,46 @@
         
         .info-row:last-child { border: none; }
         .info-row .label { color: var(--text-muted); }
+        
+        /* Admin Section */
+        .admin-section {
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .admin-section h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .admin-card {
+            background: rgba(100, 255, 218, 0.05);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
+        .admin-card h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .admin-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
         
         /* Modal */
         .modal-overlay {
@@ -567,11 +615,11 @@
             padding: 1rem;
             border-radius: 8px;
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-align: left;
             margin-bottom: 1.5rem;
-            max-height: 120px;
+            max-height: 100px;
             overflow-y: auto;
         }
         
@@ -605,12 +653,12 @@
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             display: none;
-            z-index: 1000;
+            z-index: 1001;
             max-width: 350px;
         }
         
         .toast.success { border-color: var(--success); }
-        .toast.error { border-color: #ef4444; }
+        .toast.error { border-color: var(--danger); }
         .toast.show { display: flex; align-items: center; gap: 0.75rem; animation: slideIn 0.3s ease; }
         
         @keyframes slideIn {
@@ -642,29 +690,27 @@
     <nav>
         <a href="index.html" class="logo">🦊 Fred Staking</a>
         <div class="nav-right">
-            <div class="network-badge" id="networkBadge">
+            <div class="network-badge">
                 <div class="network-dot"></div>
                 <span>Base</span>
             </div>
             
-            <!-- Connect Button (before connection) -->
             <button class="connect-btn" id="connectBtn" onclick="openConnectModal()">
                 🔗 Conectar Wallet
             </button>
             
-            <!-- Wallet Menu (after connection) -->
             <div class="wallet-menu-container hidden" id="walletMenuContainer">
                 <button class="wallet-btn" id="walletBtn" onclick="toggleWalletMenu()">
                     <div class="wallet-avatar">🦊</div>
                     <div class="wallet-info">
                         <div class="wallet-address" id="walletAddressShort">0x...</div>
-                        <div class="wallet-balance" id="walletBalanceNav">0 FRED</div>
+                        <div class="wallet-balance-nav" id="walletBalanceNav">0 FRED</div>
                     </div>
-                    <span class="verified-icon">✓</span>
                 </button>
                 <div class="wallet-dropdown" id="walletDropdown">
                     <div class="wallet-dropdown-header">
                         <div class="address-full" id="walletAddressFull">0x...</div>
+                        <div class="owner-badge hidden" id="ownerBadgeDropdown">👑 Owner</div>
                     </div>
                     <button class="wallet-dropdown-item" onclick="copyAddress()">
                         📋 Copiar endereço
@@ -722,59 +768,95 @@
         </div>
         
         <!-- Connected State -->
-        <div class="main-grid hidden" id="stakingPanel">
-            <div class="card">
-                <h2>📥 Stake</h2>
-                <div class="input-group">
-                    <label>Quantidade</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="stakeAmount" placeholder="0.0">
-                        <button class="max-btn" onclick="setMaxStake()">MAX</button>
+        <div class="hidden" id="stakingPanel">
+            <div class="main-grid">
+                <div class="card">
+                    <h2>📥 Stake</h2>
+                    <div class="input-group">
+                        <label>Quantidade</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="stakeAmount" placeholder="0.0">
+                            <button class="max-btn" onclick="setMaxStake()">MAX</button>
+                        </div>
                     </div>
-                </div>
-                <div class="balance-row">
-                    <span>Balance:</span>
-                    <span id="walletBalance">0 FRED</span>
-                </div>
-                <button class="action-btn" id="stakeBtn" onclick="stakeTokens()">
-                    Stake $FRED
-                </button>
-            </div>
-            
-            <div class="card">
-                <h2>📤 Unstake</h2>
-                <div class="input-group">
-                    <label>Quantidade</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="unstakeAmount" placeholder="0.0">
-                        <button class="max-btn" onclick="setMaxUnstake()">MAX</button>
+                    <div class="balance-row">
+                        <span>Balance:</span>
+                        <span id="walletBalance">0 FRED</span>
                     </div>
+                    <button class="action-btn" id="stakeBtn" onclick="stakeTokens()" disabled>
+                        Stake $FRED
+                    </button>
                 </div>
-                <div class="balance-row">
-                    <span>Staked:</span>
-                    <span id="stakedBalance">0 FRED</span>
-                </div>
-                <button class="action-btn secondary" id="unstakeBtn" onclick="unstakeTokens()">
-                    Unstake $FRED
-                </button>
-            </div>
-            
-            <div class="card rewards-card">
-                <h2>🎁 Rewards</h2>
-                <div class="rewards-amount" id="pendingRewards">0.0000</div>
-                <div class="rewards-usd">$FRED acumulado</div>
-                <button class="action-btn" id="claimBtn" onclick="claimRewards()">
-                    Claim Rewards
-                </button>
                 
-                <div style="margin-top: 2rem;">
-                    <div class="info-row">
-                        <span class="label">Taxa de recompensa</span>
-                        <span>~0.082% / dia</span>
+                <div class="card">
+                    <h2>📤 Unstake</h2>
+                    <div class="input-group">
+                        <label>Quantidade</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="unstakeAmount" placeholder="0.0">
+                            <button class="max-btn" onclick="setMaxUnstake()">MAX</button>
+                        </div>
                     </div>
-                    <div class="info-row">
-                        <span class="label">Tempo mínimo</span>
-                        <span>Sem lock ✅</span>
+                    <div class="balance-row">
+                        <span>Staked:</span>
+                        <span id="stakedBalance">0 FRED</span>
+                    </div>
+                    <button class="action-btn secondary" id="unstakeBtn" onclick="unstakeTokens()" disabled>
+                        Unstake $FRED
+                    </button>
+                </div>
+                
+                <div class="card rewards-card">
+                    <h2>🎁 Rewards</h2>
+                    <div class="rewards-amount" id="pendingRewards">0.00</div>
+                    <div class="rewards-usd">$FRED acumulado</div>
+                    <button class="action-btn" id="claimBtn" onclick="claimRewards()" disabled>
+                        Claim Rewards
+                    </button>
+                    
+                    <div style="margin-top: 2rem;">
+                        <div class="info-row">
+                            <span class="label">Taxa de recompensa</span>
+                            <span>~0.082% / dia</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Tempo mínimo</span>
+                            <span>Sem lock ✅</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Section (only visible to owner) -->
+            <div class="admin-section hidden" id="adminSection">
+                <h2>👑 Painel do Owner</h2>
+                <div class="admin-cards">
+                    <div class="admin-card">
+                        <h3>💰 Depositar Recompensas</h3>
+                        <p>Adicione $FRED ao pool de recompensas para os stakers.</p>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <input type="number" id="depositAmount" placeholder="0.0">
+                                <button class="max-btn" onclick="setMaxDeposit()">MAX</button>
+                            </div>
+                        </div>
+                        <button class="action-btn admin-btn" id="depositBtn" onclick="depositRewards()">
+                            Depositar
+                        </button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3>🔓 Retirar Recompensas</h3>
+                        <p>Retire recompensas não distribuídas do pool.</p>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <input type="number" id="withdrawAmount" placeholder="0.0">
+                                <button class="max-btn" onclick="setMaxWithdraw()">MAX</button>
+                            </div>
+                        </div>
+                        <button class="action-btn secondary" id="withdrawBtn" onclick="withdrawRewards()">
+                            Retirar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -782,7 +864,7 @@
     </div>
     
     <footer>
-        <p>Contrato: <a href="https://basescan.org/address/0xA31824476d177205d448908a4ec9f6e2fc9274DB" target="_blank">0xA314...4DB</a> • <a href="admin.html">Admin</a></p>
+        <p>Contrato: <a href="https://basescan.org/address/0xA31824476d177205d448908a4ec9f6e2fc9274DB" target="_blank">0xA314...4DB</a> (Verificado ✓)</p>
         <p style="margin-top: 0.5rem;">Powered by <a href="index.html">Open Fred</a> 🦊</p>
     </footer>
     
@@ -800,19 +882,11 @@
                 </div>
             </div>
             
-            <div class="wallet-option" onclick="connectWallet('walletconnect')">
-                <img src="https://avatars.githubusercontent.com/u/37784886" alt="WalletConnect" style="background: #3B99FC;">
+            <div class="wallet-option" onclick="connectWallet('injected')">
+                <div style="width:40px;height:40px;background:var(--gradient);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🌐</div>
                 <div>
-                    <div class="wallet-name">WalletConnect</div>
-                    <div class="wallet-desc">Escanear com seu celular</div>
-                </div>
-            </div>
-            
-            <div class="wallet-option" onclick="connectWallet('coinbase')">
-                <img src="https://avatars.githubusercontent.com/u/18060234" alt="Coinbase">
-                <div>
-                    <div class="wallet-name">Coinbase Wallet</div>
-                    <div class="wallet-desc">Conectar com Coinbase</div>
+                    <div class="wallet-name">Browser Wallet</div>
+                    <div class="wallet-desc">Usar wallet do navegador</div>
                 </div>
             </div>
             
@@ -826,11 +900,9 @@
             <div class="sign-modal-content">
                 <div class="icon">✍️</div>
                 <h3>Verificar Propriedade</h3>
-                <p>Assine a mensagem na sua wallet para provar que você é o dono deste endereço. Isso não custa gas.</p>
-                <div class="message-preview" id="signMessagePreview">
-                    Carregando mensagem...
-                </div>
-                <button class="action-btn" id="signBtn" onclick="signMessage()">
+                <p>Assine a mensagem para provar que você é o dono desta wallet. Isso não custa gas.</p>
+                <div class="message-preview" id="signMessagePreview"></div>
+                <button class="action-btn" onclick="signMessage()">
                     Assinar Mensagem
                 </button>
                 <button class="modal-close" onclick="cancelSign()">Cancelar</button>
@@ -849,21 +921,31 @@
             "function stake(uint256 amount) external",
             "function unstake(uint256 amount) external",
             "function claimRewards() external",
+            "function depositRewards(uint256 amount) external",
+            "function withdrawRewards(uint256 amount) external",
             "function pendingRewards(address user) view returns (uint256)",
             "function getStakeInfo(address user) view returns (uint256 stakedAmount, uint256 pending, uint256 lastUpdate)",
-            "function getContractStats() view returns (uint256 totalStaked, uint256 rewardPool, uint256 totalRewardsPaid, uint256 apy)"
+            "function getContractStats() view returns (uint256 totalStaked, uint256 rewardPool, uint256 totalRewardsPaid, uint256 apy)",
+            "function owner() view returns (address)",
+            "function rewardPool() view returns (uint256)"
         ];
         
         const ERC20_ABI = [
             "function balanceOf(address) view returns (uint256)",
             "function approve(address spender, uint256 amount) returns (bool)",
-            "function allowance(address owner, address spender) view returns (uint256)"
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)"
         ];
         
         let provider, signer, userAddress;
         let stakingContract, tokenContract;
         let rewardUpdateInterval;
-        let isVerified = false;
+        let isOwner = false;
+        let userBalance = 0n;
+        let userStaked = 0n;
+        let userPending = 0n;
+        let currentRewardPool = 0n;
         
         function openConnectModal() {
             document.getElementById('connectModal').classList.add('show');
@@ -874,11 +956,9 @@
         }
         
         function toggleWalletMenu() {
-            const dropdown = document.getElementById('walletDropdown');
-            dropdown.classList.toggle('show');
+            document.getElementById('walletDropdown').classList.toggle('show');
         }
         
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.wallet-menu-container')) {
                 document.getElementById('walletDropdown').classList.remove('show');
@@ -899,13 +979,8 @@
         async function connectWallet(walletType) {
             closeConnectModal();
             
-            if (walletType === 'walletconnect' || walletType === 'coinbase') {
-                showToast('Em breve! Use MetaMask por enquanto.', 'error');
-                return;
-            }
-            
             if (!window.ethereum) {
-                showToast('MetaMask não encontrado! Instale em metamask.io', 'error');
+                showToast('Nenhuma wallet encontrada! Instale MetaMask.', 'error');
                 return;
             }
             
@@ -916,7 +991,6 @@
                 const accounts = await provider.send("eth_requestAccounts", []);
                 userAddress = accounts[0];
                 
-                // Check and switch network
                 const network = await provider.getNetwork();
                 if (Number(network.chainId) !== BASE_CHAIN_ID) {
                     showToast('Mudando para Base...', 'success');
@@ -945,30 +1019,26 @@
                 }
                 
                 signer = await provider.getSigner();
-                
-                // Show sign message modal
                 showSignModal();
                 
             } catch (error) {
                 console.error(error);
                 if (error.code === 4001) {
-                    showToast('Conexão cancelada pelo usuário', 'error');
+                    showToast('Conexão cancelada', 'error');
                 } else {
-                    showToast('Erro: ' + (error.message || 'Falha na conexão'), 'error');
+                    showToast('Erro: ' + (error.message || 'Falha'), 'error');
                 }
             }
         }
         
         function showSignModal() {
-            const message = `Fred Staking - Verificação de Propriedade
-
-Ao assinar esta mensagem, você confirma que é o proprietário deste endereço.
+            const message = `Fred Staking - Verificação
 
 Endereço: ${userAddress}
-Timestamp: ${new Date().toISOString()}
-Nonce: ${Math.random().toString(36).substring(7)}
+Data: ${new Date().toISOString()}
+Nonce: ${Math.random().toString(36).substr(2, 9)}
 
-Esta assinatura não autoriza nenhuma transação e não custa gas.`;
+Esta assinatura prova que você é o dono desta wallet. Não custa gas.`;
             
             document.getElementById('signMessagePreview').textContent = message;
             document.getElementById('signModal').classList.add('show');
@@ -987,33 +1057,32 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             try {
                 showToast('Aguardando assinatura...', 'success');
                 const signature = await signer.signMessage(window.signMessageText);
+                const recovered = ethers.verifyMessage(window.signMessageText, signature);
                 
-                // Verify signature (optional - you could send to backend)
-                const recoveredAddress = ethers.verifyMessage(window.signMessageText, signature);
-                
-                if (recoveredAddress.toLowerCase() === userAddress.toLowerCase()) {
-                    isVerified = true;
+                if (recovered.toLowerCase() === userAddress.toLowerCase()) {
                     document.getElementById('signModal').classList.remove('show');
-                    completeConnection();
+                    await completeConnection();
                 } else {
                     throw new Error('Assinatura inválida');
                 }
-                
             } catch (error) {
                 console.error(error);
                 if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
                     showToast('Assinatura cancelada', 'error');
                 } else {
-                    showToast('Erro na assinatura: ' + error.message, 'error');
+                    showToast('Erro: ' + error.message, 'error');
                 }
             }
         }
         
         async function completeConnection() {
             try {
-                // Initialize contracts
                 stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
                 tokenContract = new ethers.Contract(FRED_TOKEN, ERC20_ABI, signer);
+                
+                // Check if owner
+                const ownerAddress = await stakingContract.owner();
+                isOwner = ownerAddress.toLowerCase() === userAddress.toLowerCase();
                 
                 // Update UI
                 const shortAddr = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
@@ -1023,19 +1092,23 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
                 document.getElementById('walletAddressShort').textContent = shortAddr;
                 document.getElementById('walletAddressFull').textContent = userAddress;
                 
+                if (isOwner) {
+                    document.getElementById('ownerBadgeDropdown').classList.remove('hidden');
+                    document.getElementById('adminSection').classList.remove('hidden');
+                }
+                
                 document.getElementById('notConnectedCard').classList.add('hidden');
                 document.getElementById('stakingPanel').classList.remove('hidden');
                 
                 await updateAllData();
                 
-                // Start reward updater
-                rewardUpdateInterval = setInterval(updatePendingRewards, 3000);
+                rewardUpdateInterval = setInterval(updatePendingRewards, 5000);
                 
-                showToast('✓ Wallet verificada e conectada!', 'success');
+                showToast('✓ Wallet conectada!', 'success');
                 
             } catch (error) {
                 console.error(error);
-                showToast('Erro ao completar conexão', 'error');
+                showToast('Erro ao conectar', 'error');
             }
         }
         
@@ -1045,13 +1118,15 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             signer = null;
             stakingContract = null;
             tokenContract = null;
-            isVerified = false;
+            isOwner = false;
             
             if (rewardUpdateInterval) clearInterval(rewardUpdateInterval);
             
             document.getElementById('connectBtn').classList.remove('hidden');
             document.getElementById('walletMenuContainer').classList.add('hidden');
             document.getElementById('walletDropdown').classList.remove('show');
+            document.getElementById('ownerBadgeDropdown').classList.add('hidden');
+            document.getElementById('adminSection').classList.add('hidden');
             
             document.getElementById('notConnectedCard').classList.remove('hidden');
             document.getElementById('stakingPanel').classList.add('hidden');
@@ -1060,7 +1135,7 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
         }
         
         async function updateAllData() {
-            if (!userAddress) return;
+            if (!userAddress || !tokenContract || !stakingContract) return;
             
             try {
                 const [balance, stakeInfo, stats] = await Promise.all([
@@ -1069,6 +1144,12 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
                     stakingContract.getContractStats()
                 ]);
                 
+                userBalance = balance;
+                userStaked = stakeInfo[0];
+                userPending = stakeInfo[1];
+                currentRewardPool = stats[1];
+                
+                // Update displays
                 document.getElementById('walletBalance').textContent = formatAmount(balance) + ' FRED';
                 document.getElementById('walletBalanceNav').textContent = formatAmount(balance) + ' FRED';
                 document.getElementById('yourStake').textContent = formatAmount(stakeInfo[0]) + ' FRED';
@@ -1077,26 +1158,44 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
                 document.getElementById('totalStaked').textContent = formatAmount(stats[0]) + ' FRED';
                 document.getElementById('rewardPool').textContent = formatAmount(stats[1]) + ' FRED';
                 
+                // Update button states
+                updateButtonStates();
+                
             } catch (error) {
                 console.error('Error updating data:', error);
             }
+        }
+        
+        function updateButtonStates() {
+            // Stake button - enabled if user has balance
+            document.getElementById('stakeBtn').disabled = userBalance === 0n;
+            
+            // Unstake button - enabled if user has staked
+            document.getElementById('unstakeBtn').disabled = userStaked === 0n;
+            
+            // Claim button - enabled if user has pending rewards AND reward pool has funds
+            const hasPending = userPending > 0n;
+            const hasRewardPool = currentRewardPool > 0n;
+            document.getElementById('claimBtn').disabled = !hasPending || !hasRewardPool;
         }
         
         async function updatePendingRewards() {
             if (!userAddress || !stakingContract) return;
             try {
                 const pending = await stakingContract.pendingRewards(userAddress);
+                userPending = pending;
                 document.getElementById('pendingRewards').textContent = formatAmount(pending);
+                updateButtonStates();
             } catch (e) {}
         }
         
         function formatAmount(wei) {
             const value = parseFloat(ethers.formatEther(wei));
             if (value === 0) return '0.00';
-            if (value < 0.0001) return value.toExponential(2);
+            if (value < 0.01) return value.toFixed(6);
             return value.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 4
+                maximumFractionDigits: 2
             });
         }
         
@@ -1112,6 +1211,18 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             document.getElementById('unstakeAmount').value = ethers.formatEther(stakeInfo[0]);
         }
         
+        async function setMaxDeposit() {
+            if (!tokenContract || !userAddress) return;
+            const balance = await tokenContract.balanceOf(userAddress);
+            document.getElementById('depositAmount').value = ethers.formatEther(balance);
+        }
+        
+        async function setMaxWithdraw() {
+            if (!stakingContract) return;
+            const pool = await stakingContract.rewardPool();
+            document.getElementById('withdrawAmount').value = ethers.formatEther(pool);
+        }
+        
         async function stakeTokens() {
             const amount = document.getElementById('stakeAmount').value;
             if (!amount || parseFloat(amount) <= 0) {
@@ -1120,30 +1231,33 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             }
             
             const btn = document.getElementById('stakeBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.disabled = true;
             
             try {
                 const amountWei = ethers.parseEther(amount);
                 
                 const allowance = await tokenContract.allowance(userAddress, STAKING_CONTRACT);
                 if (allowance < amountWei) {
-                    showToast('Aprovando tokens... Confirme na wallet', 'success');
+                    showToast('Aprovando tokens...', 'success');
                     const approveTx = await tokenContract.approve(STAKING_CONTRACT, ethers.MaxUint256);
                     await approveTx.wait();
                 }
                 
-                showToast('Fazendo stake... Confirme na wallet', 'success');
+                showToast('Fazendo stake...', 'success');
                 const tx = await stakingContract.stake(amountWei);
                 await tx.wait();
                 
-                showToast('✓ Stake realizado com sucesso!', 'success');
+                showToast('✓ Stake realizado!', 'success');
                 document.getElementById('stakeAmount').value = '';
                 await updateAllData();
                 
             } catch (error) {
                 handleError(error);
             } finally {
-                btn.innerHTML = 'Stake $FRED';
+                btn.innerHTML = originalText;
+                updateButtonStates();
             }
         }
         
@@ -1155,32 +1269,37 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             }
             
             const btn = document.getElementById('unstakeBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.disabled = true;
             
             try {
                 const amountWei = ethers.parseEther(amount);
                 
-                showToast('Fazendo unstake... Confirme na wallet', 'success');
+                showToast('Fazendo unstake...', 'success');
                 const tx = await stakingContract.unstake(amountWei);
                 await tx.wait();
                 
-                showToast('✓ Unstake realizado com sucesso!', 'success');
+                showToast('✓ Unstake realizado!', 'success');
                 document.getElementById('unstakeAmount').value = '';
                 await updateAllData();
                 
             } catch (error) {
                 handleError(error);
             } finally {
-                btn.innerHTML = 'Unstake $FRED';
+                btn.innerHTML = originalText;
+                updateButtonStates();
             }
         }
         
         async function claimRewards() {
             const btn = document.getElementById('claimBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Processando...';
+            btn.disabled = true;
             
             try {
-                showToast('Coletando recompensas... Confirme na wallet', 'success');
+                showToast('Coletando recompensas...', 'success');
                 const tx = await stakingContract.claimRewards();
                 await tx.wait();
                 
@@ -1190,7 +1309,77 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             } catch (error) {
                 handleError(error);
             } finally {
-                btn.innerHTML = 'Claim Rewards';
+                btn.innerHTML = originalText;
+                updateButtonStates();
+            }
+        }
+        
+        async function depositRewards() {
+            const amount = document.getElementById('depositAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showToast('Digite uma quantidade válida', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('depositBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner"></div>';
+            btn.disabled = true;
+            
+            try {
+                const amountWei = ethers.parseEther(amount);
+                
+                const allowance = await tokenContract.allowance(userAddress, STAKING_CONTRACT);
+                if (allowance < amountWei) {
+                    showToast('Aprovando tokens...', 'success');
+                    const approveTx = await tokenContract.approve(STAKING_CONTRACT, ethers.MaxUint256);
+                    await approveTx.wait();
+                }
+                
+                showToast('Depositando recompensas...', 'success');
+                const tx = await stakingContract.depositRewards(amountWei);
+                await tx.wait();
+                
+                showToast('✓ Recompensas depositadas!', 'success');
+                document.getElementById('depositAmount').value = '';
+                await updateAllData();
+                
+            } catch (error) {
+                handleError(error);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        async function withdrawRewards() {
+            const amount = document.getElementById('withdrawAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showToast('Digite uma quantidade válida', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('withdrawBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner"></div>';
+            btn.disabled = true;
+            
+            try {
+                const amountWei = ethers.parseEther(amount);
+                
+                showToast('Retirando recompensas...', 'success');
+                const tx = await stakingContract.withdrawRewards(amountWei);
+                await tx.wait();
+                
+                showToast('✓ Recompensas retiradas!', 'success');
+                document.getElementById('withdrawAmount').value = '';
+                await updateAllData();
+                
+            } catch (error) {
+                handleError(error);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
         
@@ -1206,12 +1395,11 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
         function showToast(message, type) {
             const toast = document.getElementById('toast');
             const icon = type === 'success' ? '✓' : '✕';
-            toast.innerHTML = `<span style="font-size: 1.2rem;">${icon}</span> ${message}`;
+            toast.innerHTML = `<span>${icon}</span> ${message}`;
             toast.className = 'toast show ' + type;
             setTimeout(() => toast.classList.remove('show'), 4000);
         }
         
-        // Load contract stats on page load
         async function loadPublicStats() {
             try {
                 const rpcProvider = new ethers.JsonRpcProvider('https://mainnet.base.org');
@@ -1225,28 +1413,20 @@ Esta assinatura não autoriza nenhuma transação e não custa gas.`;
             }
         }
         
-        // Event listeners
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length === 0) {
-                    disconnectWallet();
-                } else {
-                    location.reload();
-                }
+                if (accounts.length === 0) disconnectWallet();
+                else location.reload();
             });
             window.ethereum.on('chainChanged', () => location.reload());
         }
         
-        // Close modals on outside click
         document.querySelectorAll('.modal-overlay').forEach(modal => {
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
+                if (e.target === modal) modal.classList.remove('show');
             });
         });
         
-        // Load stats on page load
         loadPublicStats();
     </script>
 </body>
