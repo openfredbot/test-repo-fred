@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stake $FRED 🦊 | 30% APY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e55a2b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-input: #1a1a24;
+            --text: #ffffff;
+            --text-muted: #8892b0;
+            --accent: #64ffda;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(100, 255, 218, 0.05) 0%, transparent 50%);
+        }
+        
+        nav {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .connect-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+        
+        .connect-btn.connected {
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .apy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        
+        .stat-card .value.accent { color: var(--accent); }
+        .stat-card .value.primary { color: var(--primary); }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1.1rem;
+            outline: none;
+        }
+        
+        .input-wrapper .max-btn {
+            padding: 0 1rem;
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .rewards-card {
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+        
+        .rewards-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .rewards-usd {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .info-row:last-child { border: none; }
+        
+        .info-row .label { color: var(--text-muted); }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: #ef4444; }
+        .toast.show { display: block; animation: slideIn 0.3s ease; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .network-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-left: 1rem;
+        }
+        
+        .network-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        footer a { color: var(--primary); text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .main-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <nav>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">🦊 Fred Staking</span>
+            <span class="network-badge">Base</span>
+        </div>
+        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+            Connect Wallet
+        </button>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Stake $FRED</h1>
+            <p style="color: var(--text-muted);">Ganhe recompensas passivas com seu $FRED</p>
+            <div class="apy-badge">
+                <span>🔥</span>
+                <span>30% APY</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total Staked</div>
+                <div class="value" id="totalStaked">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Reward Pool</div>
+                <div class="value accent" id="rewardPool">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Your Stake</div>
+                <div class="value primary" id="yourStake">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">APY</div>
+                <div class="value accent">30%</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="card">
+                <h2>📥 Stake</h2>
+                <div class="input-group">
+                    <label>Quantidade</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="stakeAmount" placeholder="0.0">
+                        <button class="max-btn" onclick="setMaxStake()">MAX</button>
+                    </div>
+                </div>
+                <div class="balance-row">
+                    <span>Balance:</span>
+                    <span id="walletBalance">-</span>
+                </div>
+                <button class="action-btn" id="stakeBtn" onclick="stakeTokens()" disabled>
+                    Stake $FRED
+                </button>
+            </div>
+            
+            <div class="card">
+                <h2>📤 Unstake</h2>
+                <div class="input-group">
+                    <label>Quantidade</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="unstakeAmount" placeholder="0.0">
+                        <button class="max-btn" onclick="setMaxUnstake()">MAX</button>
+                    </div>
+                </div>
+                <div class="balance-row">
+                    <span>Staked:</span>
+                    <span id="stakedBalance">-</span>
+                </div>
+                <button class="action-btn secondary" id="unstakeBtn" onclick="unstakeTokens()" disabled>
+                    Unstake $FRED
+                </button>
+            </div>
+            
+            <div class="card rewards-card">
+                <h2>🎁 Rewards</h2>
+                <div class="rewards-amount" id="pendingRewards">0.00</div>
+                <div class="rewards-usd">$FRED acumulado</div>
+                <button class="action-btn" id="claimBtn" onclick="claimRewards()" disabled>
+                    Claim Rewards
+                </button>
+                
+                <div style="margin-top: 2rem;">
+                    <div class="info-row">
+                        <span class="label">Taxa de recompensa</span>
+                        <span>~0.082% / dia</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Tempo mínimo</span>
+                        <span>Sem lock ✅</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Contrato: <a href="#" id="contractLink" target="_blank">Ver no Basescan</a></p>
+        <p style="margin-top: 0.5rem;">Powered by <a href="index.html">Open Fred</a> 🦊</p>
+    </footer>
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Contract addresses - UPDATE THESE AFTER DEPLOYMENT
+        const STAKING_CONTRACT = '0x0000000000000000000000000000000000000000'; // TODO: Update
+        const FRED_TOKEN = '0x3f9BEB72028F52111065c9e9F8684B91Ad19dE9d';
+        const BASE_CHAIN_ID = 8453;
+        
+        // ABIs (simplified)
+        const STAKING_ABI = [
+            "function stake(uint256 amount) external",
+            "function unstake(uint256 amount) external",
+            "function claimRewards() external",
+            "function pendingRewards(address user) view returns (uint256)",
+            "function getStakeInfo(address user) view returns (uint256 stakedAmount, uint256 pending, uint256 lastUpdate)",
+            "function getContractStats() view returns (uint256 totalStaked, uint256 rewardPool, uint256 totalRewardsPaid, uint256 apy)",
+            "function stakes(address) view returns (uint256 amount, uint256 rewardDebt, uint256 lastUpdateTime)"
+        ];
+        
+        const ERC20_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function approve(address spender, uint256 amount) returns (bool)",
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function decimals() view returns (uint8)"
+        ];
+        
+        let provider, signer, userAddress;
+        let stakingContract, tokenContract;
+        
+        async function connectWallet() {
+            if (!window.ethereum) {
+                showToast('Por favor instale MetaMask!', 'error');
+                return;
+            }
+            
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                
+                // Request accounts
+                const accounts = await provider.send("eth_requestAccounts", []);
+                userAddress = accounts[0];
+                
+                // Check network
+                const network = await provider.getNetwork();
+                if (Number(network.chainId) !== BASE_CHAIN_ID) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x2105' }],
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0x2105',
+                                    chainName: 'Base',
+                                    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                                    rpcUrls: ['https://mainnet.base.org'],
+                                    blockExplorerUrls: ['https://basescan.org']
+                                }]
+                            });
+                        }
+                    }
+                    provider = new ethers.BrowserProvider(window.ethereum);
+                }
+                
+                signer = await provider.getSigner();
+                
+                // Initialize contracts
+                stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
+                tokenContract = new ethers.Contract(FRED_TOKEN, ERC20_ABI, signer);
+                
+                // Update UI
+                const shortAddr = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+                document.getElementById('connectBtn').textContent = shortAddr;
+                document.getElementById('connectBtn').classList.add('connected');
+                
+                // Enable buttons
+                document.getElementById('stakeBtn').disabled = false;
+                document.getElementById('unstakeBtn').disabled = false;
+                document.getElementById('claimBtn').disabled = false;
+                
+                // Load data
+                await updateAllData();
+                
+                // Start reward updater
+                setInterval(updatePendingRewards, 5000);
+                
+                showToast('Wallet conectada!', 'success');
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Erro ao conectar: ' + error.message, 'error');
+            }
+        }
+        
+        async function updateAllData() {
+            if (!userAddress) return;
+            
+            try {
+                // Get token balance
+                const balance = await tokenContract.balanceOf(userAddress);
+                document.getElementById('walletBalance').textContent = formatAmount(balance) + ' FRED';
+                
+                // Get stake info
+                const stakeInfo = await stakingContract.getStakeInfo(userAddress);
+                document.getElementById('yourStake').textContent = formatAmount(stakeInfo[0]) + ' FRED';
+                document.getElementById('stakedBalance').textContent = formatAmount(stakeInfo[0]) + ' FRED';
+                document.getElementById('pendingRewards').textContent = formatAmount(stakeInfo[1]);
+                
+                // Get contract stats
+                const stats = await stakingContract.getContractStats();
+                document.getElementById('totalStaked').textContent = formatAmount(stats[0]) + ' FRED';
+                document.getElementById('rewardPool').textContent = formatAmount(stats[1]) + ' FRED';
+                
+            } catch (error) {
+                console.error('Error updating data:', error);
+            }
+        }
+        
+        async function updatePendingRewards() {
+            if (!userAddress || !stakingContract) return;
+            try {
+                const pending = await stakingContract.pendingRewards(userAddress);
+                document.getElementById('pendingRewards').textContent = formatAmount(pending);
+            } catch (e) {}
+        }
+        
+        function formatAmount(wei) {
+            return parseFloat(ethers.formatEther(wei)).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 4
+            });
+        }
+        
+        async function setMaxStake() {
+            if (!tokenContract || !userAddress) return;
+            const balance = await tokenContract.balanceOf(userAddress);
+            document.getElementById('stakeAmount').value = ethers.formatEther(balance);
+        }
+        
+        async function setMaxUnstake() {
+            if (!stakingContract || !userAddress) return;
+            const stakeInfo = await stakingContract.getStakeInfo(userAddress);
+            document.getElementById('unstakeAmount').value = ethers.formatEther(stakeInfo[0]);
+        }
+        
+        async function stakeTokens() {
+            const amount = document.getElementById('stakeAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showToast('Digite uma quantidade válida', 'error');
+                return;
+            }
+            
+            try {
+                const amountWei = ethers.parseEther(amount);
+                
+                // Check allowance
+                const allowance = await tokenContract.allowance(userAddress, STAKING_CONTRACT);
+                if (allowance < amountWei) {
+                    showToast('Aprovando tokens...', 'success');
+                    const approveTx = await tokenContract.approve(STAKING_CONTRACT, ethers.MaxUint256);
+                    await approveTx.wait();
+                }
+                
+                showToast('Fazendo stake...', 'success');
+                const tx = await stakingContract.stake(amountWei);
+                await tx.wait();
+                
+                showToast('Stake realizado com sucesso!', 'success');
+                document.getElementById('stakeAmount').value = '';
+                await updateAllData();
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Erro: ' + (error.reason || error.message), 'error');
+            }
+        }
+        
+        async function unstakeTokens() {
+            const amount = document.getElementById('unstakeAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showToast('Digite uma quantidade válida', 'error');
+                return;
+            }
+            
+            try {
+                const amountWei = ethers.parseEther(amount);
+                
+                showToast('Fazendo unstake...', 'success');
+                const tx = await stakingContract.unstake(amountWei);
+                await tx.wait();
+                
+                showToast('Unstake realizado com sucesso!', 'success');
+                document.getElementById('unstakeAmount').value = '';
+                await updateAllData();
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Erro: ' + (error.reason || error.message), 'error');
+            }
+        }
+        
+        async function claimRewards() {
+            try {
+                showToast('Coletando recompensas...', 'success');
+                const tx = await stakingContract.claimRewards();
+                await tx.wait();
+                
+                showToast('Recompensas coletadas!', 'success');
+                await updateAllData();
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Erro: ' + (error.reason || error.message), 'error');
+            }
+        }
+        
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Check if already connected
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', () => location.reload());
+            window.ethereum.on('chainChanged', () => location.reload());
+        }
+    </script>
+</body>
+</html>
