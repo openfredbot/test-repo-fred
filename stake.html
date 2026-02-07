@@ -87,11 +87,6 @@
             animation: pulse 2s infinite;
         }
         
-        .network-badge.wrong .network-dot {
-            background: #ef4444;
-            animation: none;
-        }
-        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -116,16 +111,122 @@
             box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
         }
         
-        .connect-btn.connected {
+        /* Wallet Menu */
+        .wallet-menu-container {
+            position: relative;
+        }
+        
+        .wallet-btn {
+            padding: 0.5rem 1rem;
             background: var(--bg-card);
             border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+        }
+        
+        .wallet-btn:hover {
+            border-color: var(--primary);
         }
         
         .wallet-avatar {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-info {
+            text-align: left;
+        }
+        
+        .wallet-address {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-balance {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .wallet-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            min-width: 220px;
+            padding: 0.5rem;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .wallet-dropdown.show {
+            display: block;
+            animation: dropIn 0.2s ease;
+        }
+        
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .wallet-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+            border: none;
+            background: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-dropdown-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .wallet-dropdown-item.danger {
+            color: #ef4444;
+        }
+        
+        .wallet-dropdown-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 0.5rem 0;
+        }
+        
+        .wallet-dropdown-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 0.5rem;
+        }
+        
+        .wallet-dropdown-header .address-full {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        
+        .verified-icon {
+            color: var(--accent);
+            font-size: 0.9rem;
         }
         
         .container {
@@ -267,11 +368,6 @@
             color: var(--primary);
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        
-        .input-wrapper .max-btn:hover {
-            opacity: 0.8;
         }
         
         .balance-row {
@@ -314,10 +410,6 @@
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
-        }
-        
-        .action-btn.loading {
-            pointer-events: none;
         }
         
         .spinner {
@@ -385,7 +477,7 @@
             border-radius: 20px;
             padding: 2rem;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid rgba(255,255,255,0.1);
             animation: modalIn 0.3s ease;
         }
@@ -397,8 +489,15 @@
         
         .modal h3 {
             font-size: 1.3rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             text-align: center;
+        }
+        
+        .modal-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
         }
         
         .wallet-option {
@@ -444,11 +543,36 @@
             color: var(--text-muted);
             cursor: pointer;
             margin-top: 1rem;
-            transition: all 0.3s;
         }
         
-        .modal-close:hover {
-            border-color: var(--text-muted);
+        /* Sign Message Modal */
+        .sign-modal-content {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        
+        .sign-modal-content .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sign-modal-content p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .sign-modal-content .message-preview {
+            background: var(--bg-input);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: left;
+            margin-bottom: 1.5rem;
+            max-height: 120px;
+            overflow-y: auto;
         }
         
         /* Not Connected State */
@@ -506,8 +630,7 @@
         @media (max-width: 768px) {
             .header h1 { font-size: 2rem; }
             .main-grid { grid-template-columns: 1fr; }
-            .nav-right { gap: 0.5rem; }
-            .network-badge span:last-child { display: none; }
+            .wallet-info { display: none; }
         }
         
         .hidden { display: none !important; }
@@ -523,9 +646,38 @@
                 <div class="network-dot"></div>
                 <span>Base</span>
             </div>
+            
+            <!-- Connect Button (before connection) -->
             <button class="connect-btn" id="connectBtn" onclick="openConnectModal()">
-                🔗 Conectar
+                🔗 Conectar Wallet
             </button>
+            
+            <!-- Wallet Menu (after connection) -->
+            <div class="wallet-menu-container hidden" id="walletMenuContainer">
+                <button class="wallet-btn" id="walletBtn" onclick="toggleWalletMenu()">
+                    <div class="wallet-avatar">🦊</div>
+                    <div class="wallet-info">
+                        <div class="wallet-address" id="walletAddressShort">0x...</div>
+                        <div class="wallet-balance" id="walletBalanceNav">0 FRED</div>
+                    </div>
+                    <span class="verified-icon">✓</span>
+                </button>
+                <div class="wallet-dropdown" id="walletDropdown">
+                    <div class="wallet-dropdown-header">
+                        <div class="address-full" id="walletAddressFull">0x...</div>
+                    </div>
+                    <button class="wallet-dropdown-item" onclick="copyAddress()">
+                        📋 Copiar endereço
+                    </button>
+                    <button class="wallet-dropdown-item" onclick="viewOnExplorer()">
+                        🔗 Ver no Basescan
+                    </button>
+                    <div class="wallet-dropdown-divider"></div>
+                    <button class="wallet-dropdown-item danger" onclick="disconnectWallet()">
+                        🚪 Desconectar
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
     
@@ -638,6 +790,7 @@
     <div class="modal-overlay" id="connectModal">
         <div class="modal">
             <h3>Conectar Wallet</h3>
+            <p class="modal-subtitle">Escolha sua wallet para continuar</p>
             
             <div class="wallet-option" onclick="connectWallet('metamask')">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
@@ -667,6 +820,24 @@
         </div>
     </div>
     
+    <!-- Sign Message Modal -->
+    <div class="modal-overlay" id="signModal">
+        <div class="modal">
+            <div class="sign-modal-content">
+                <div class="icon">✍️</div>
+                <h3>Verificar Propriedade</h3>
+                <p>Assine a mensagem na sua wallet para provar que você é o dono deste endereço. Isso não custa gas.</p>
+                <div class="message-preview" id="signMessagePreview">
+                    Carregando mensagem...
+                </div>
+                <button class="action-btn" id="signBtn" onclick="signMessage()">
+                    Assinar Mensagem
+                </button>
+                <button class="modal-close" onclick="cancelSign()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="toast" id="toast"></div>
 
     <script>
@@ -692,6 +863,7 @@
         let provider, signer, userAddress;
         let stakingContract, tokenContract;
         let rewardUpdateInterval;
+        let isVerified = false;
         
         function openConnectModal() {
             document.getElementById('connectModal').classList.add('show');
@@ -699,6 +871,29 @@
         
         function closeConnectModal() {
             document.getElementById('connectModal').classList.remove('show');
+        }
+        
+        function toggleWalletMenu() {
+            const dropdown = document.getElementById('walletDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.wallet-menu-container')) {
+                document.getElementById('walletDropdown').classList.remove('show');
+            }
+        });
+        
+        function copyAddress() {
+            navigator.clipboard.writeText(userAddress);
+            showToast('✓ Endereço copiado!', 'success');
+            document.getElementById('walletDropdown').classList.remove('show');
+        }
+        
+        function viewOnExplorer() {
+            window.open(`https://basescan.org/address/${userAddress}`, '_blank');
+            document.getElementById('walletDropdown').classList.remove('show');
         }
         
         async function connectWallet(walletType) {
@@ -751,28 +946,8 @@
                 
                 signer = await provider.getSigner();
                 
-                // Initialize contracts
-                stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
-                tokenContract = new ethers.Contract(FRED_TOKEN, ERC20_ABI, signer);
-                
-                // Update UI
-                const shortAddr = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
-                document.getElementById('connectBtn').innerHTML = `
-                    <div class="wallet-avatar"></div>
-                    ${shortAddr}
-                `;
-                document.getElementById('connectBtn').classList.add('connected');
-                document.getElementById('connectBtn').onclick = disconnectWallet;
-                
-                document.getElementById('notConnectedCard').classList.add('hidden');
-                document.getElementById('stakingPanel').classList.remove('hidden');
-                
-                await updateAllData();
-                
-                // Start reward updater
-                rewardUpdateInterval = setInterval(updatePendingRewards, 3000);
-                
-                showToast('✓ Wallet conectada com sucesso!', 'success');
+                // Show sign message modal
+                showSignModal();
                 
             } catch (error) {
                 console.error(error);
@@ -784,18 +959,99 @@
             }
         }
         
+        function showSignModal() {
+            const message = `Fred Staking - Verificação de Propriedade
+
+Ao assinar esta mensagem, você confirma que é o proprietário deste endereço.
+
+Endereço: ${userAddress}
+Timestamp: ${new Date().toISOString()}
+Nonce: ${Math.random().toString(36).substring(7)}
+
+Esta assinatura não autoriza nenhuma transação e não custa gas.`;
+            
+            document.getElementById('signMessagePreview').textContent = message;
+            document.getElementById('signModal').classList.add('show');
+            window.signMessageText = message;
+        }
+        
+        function cancelSign() {
+            document.getElementById('signModal').classList.remove('show');
+            userAddress = null;
+            provider = null;
+            signer = null;
+            showToast('Conexão cancelada', 'error');
+        }
+        
+        async function signMessage() {
+            try {
+                showToast('Aguardando assinatura...', 'success');
+                const signature = await signer.signMessage(window.signMessageText);
+                
+                // Verify signature (optional - you could send to backend)
+                const recoveredAddress = ethers.verifyMessage(window.signMessageText, signature);
+                
+                if (recoveredAddress.toLowerCase() === userAddress.toLowerCase()) {
+                    isVerified = true;
+                    document.getElementById('signModal').classList.remove('show');
+                    completeConnection();
+                } else {
+                    throw new Error('Assinatura inválida');
+                }
+                
+            } catch (error) {
+                console.error(error);
+                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                    showToast('Assinatura cancelada', 'error');
+                } else {
+                    showToast('Erro na assinatura: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        async function completeConnection() {
+            try {
+                // Initialize contracts
+                stakingContract = new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, signer);
+                tokenContract = new ethers.Contract(FRED_TOKEN, ERC20_ABI, signer);
+                
+                // Update UI
+                const shortAddr = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+                
+                document.getElementById('connectBtn').classList.add('hidden');
+                document.getElementById('walletMenuContainer').classList.remove('hidden');
+                document.getElementById('walletAddressShort').textContent = shortAddr;
+                document.getElementById('walletAddressFull').textContent = userAddress;
+                
+                document.getElementById('notConnectedCard').classList.add('hidden');
+                document.getElementById('stakingPanel').classList.remove('hidden');
+                
+                await updateAllData();
+                
+                // Start reward updater
+                rewardUpdateInterval = setInterval(updatePendingRewards, 3000);
+                
+                showToast('✓ Wallet verificada e conectada!', 'success');
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Erro ao completar conexão', 'error');
+            }
+        }
+        
         function disconnectWallet() {
             userAddress = null;
             provider = null;
             signer = null;
             stakingContract = null;
             tokenContract = null;
+            isVerified = false;
             
             if (rewardUpdateInterval) clearInterval(rewardUpdateInterval);
             
-            document.getElementById('connectBtn').innerHTML = '🔗 Conectar';
-            document.getElementById('connectBtn').classList.remove('connected');
-            document.getElementById('connectBtn').onclick = openConnectModal;
+            document.getElementById('connectBtn').classList.remove('hidden');
+            document.getElementById('walletMenuContainer').classList.add('hidden');
+            document.getElementById('walletDropdown').classList.remove('show');
             
             document.getElementById('notConnectedCard').classList.remove('hidden');
             document.getElementById('stakingPanel').classList.add('hidden');
@@ -814,6 +1070,7 @@
                 ]);
                 
                 document.getElementById('walletBalance').textContent = formatAmount(balance) + ' FRED';
+                document.getElementById('walletBalanceNav').textContent = formatAmount(balance) + ' FRED';
                 document.getElementById('yourStake').textContent = formatAmount(stakeInfo[0]) + ' FRED';
                 document.getElementById('stakedBalance').textContent = formatAmount(stakeInfo[0]) + ' FRED';
                 document.getElementById('pendingRewards').textContent = formatAmount(stakeInfo[1]);
@@ -864,7 +1121,6 @@
             
             const btn = document.getElementById('stakeBtn');
             btn.innerHTML = '<div class="spinner"></div> Processando...';
-            btn.classList.add('loading');
             
             try {
                 const amountWei = ethers.parseEther(amount);
@@ -885,15 +1141,9 @@
                 await updateAllData();
                 
             } catch (error) {
-                console.error(error);
-                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
-                    showToast('Transação cancelada', 'error');
-                } else {
-                    showToast('Erro: ' + (error.reason || error.message), 'error');
-                }
+                handleError(error);
             } finally {
                 btn.innerHTML = 'Stake $FRED';
-                btn.classList.remove('loading');
             }
         }
         
@@ -906,7 +1156,6 @@
             
             const btn = document.getElementById('unstakeBtn');
             btn.innerHTML = '<div class="spinner"></div> Processando...';
-            btn.classList.add('loading');
             
             try {
                 const amountWei = ethers.parseEther(amount);
@@ -920,22 +1169,15 @@
                 await updateAllData();
                 
             } catch (error) {
-                console.error(error);
-                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
-                    showToast('Transação cancelada', 'error');
-                } else {
-                    showToast('Erro: ' + (error.reason || error.message), 'error');
-                }
+                handleError(error);
             } finally {
                 btn.innerHTML = 'Unstake $FRED';
-                btn.classList.remove('loading');
             }
         }
         
         async function claimRewards() {
             const btn = document.getElementById('claimBtn');
             btn.innerHTML = '<div class="spinner"></div> Processando...';
-            btn.classList.add('loading');
             
             try {
                 showToast('Coletando recompensas... Confirme na wallet', 'success');
@@ -946,15 +1188,18 @@
                 await updateAllData();
                 
             } catch (error) {
-                console.error(error);
-                if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
-                    showToast('Transação cancelada', 'error');
-                } else {
-                    showToast('Erro: ' + (error.reason || error.message), 'error');
-                }
+                handleError(error);
             } finally {
                 btn.innerHTML = 'Claim Rewards';
-                btn.classList.remove('loading');
+            }
+        }
+        
+        function handleError(error) {
+            console.error(error);
+            if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                showToast('Transação cancelada', 'error');
+            } else {
+                showToast('Erro: ' + (error.reason || error.shortMessage || error.message), 'error');
             }
         }
         
@@ -992,11 +1237,13 @@
             window.ethereum.on('chainChanged', () => location.reload());
         }
         
-        // Close modal on outside click
-        document.getElementById('connectModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('connectModal')) {
-                closeConnectModal();
-            }
+        // Close modals on outside click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
         });
         
         // Load stats on page load
